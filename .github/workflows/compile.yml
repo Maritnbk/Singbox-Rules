@@ -25,15 +25,17 @@ jobs:
           mv sing-box-*/sing-box ./sing-box
           chmod +x ./sing-box
 
-      - name: Download JSON Rule-set
+      - name: Download JSON Rule-sets
         run: |
           curl -Lo AWAvenue-Ads-Rule-Singbox.json https://github.com/TG-Twilight/AWAvenue-Ads-Rule/raw/refs/heads/main/Filters/AWAvenue-Ads-Rule-Singbox.json
+          curl -Lo Personal-Direct.json https://github.com/Maritnbk/Singbox-Rules/raw/refs/heads/main/Personal-Direct.json
       
       - name: Compile to SRS
         run: |
           ./sing-box rule-set compile --output AWAvenue-Ads-Rule-Singbox.srs AWAvenue-Ads-Rule-Singbox.json
+          ./sing-box rule-set compile --output Personal-Direct.srs Personal-Direct.json
       
-      - name: Configure Git and Move File
+      - name: Configure Git and Move Files
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
@@ -41,12 +43,13 @@ jobs:
           mkdir -p rule
           
           mv AWAvenue-Ads-Rule-Singbox.srs rule/AWAvenue-Ads-Rule-Singbox.srs
+          mv Personal-Direct.srs rule/Personal-Direct.srs
 
       - name: Add, Commit and Push
         run: |
           if [ -n "$(git status --porcelain rule/)" ]; then
-            git add rule/AWAvenue-Ads-Rule-Singbox.srs
-            git commit -m "feat: Auto-build and update Sing-box rule-set"
+            git add rule/
+            git commit -m "feat: Auto-build and update Sing-box rule-sets"
             git push
           else
             echo "No changes to commit. Skipping push."
